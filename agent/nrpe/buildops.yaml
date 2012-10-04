@@ -1,0 +1,15 @@
+---
+  # Should we build the plugin? Defaults to true
+  build: false
+
+  # Path to MCollective libdir. MCLIBDIR
+  # mclibdir: /path/to/libdir
+  # MCollective name. Uses mcollective if unspecified
+
+  mcname: pe-mcollective
+  # Signs the package. Defaults to false
+
+  sign: false
+  # Lists of dependencies. Defaults to none
+  #dependencies:
+  #  - a dependency

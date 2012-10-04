@@ -43,7 +43,7 @@ buildops.yaml:
     # Should we build the plugin? Defaults to true
     build: false
 
-    # Path to MCollective libdir. MCLIBDIR
+    # Path to MCollective libdir. Defaults to MCLIBDIR
     # mclibdir: /path/to/libdir
 
     # MCollective name. Uses mcollective if unspecified

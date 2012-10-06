@@ -66,7 +66,7 @@ RSpec::Core::RakeTask.new(:test) do |t|
     t.pattern = 'agent/**/spec/*_spec.rb'
   end
 
-  t.rspec_opts = File.read("#{specdir}/spec.opts").chomp
+  t.rspec_opts = $LOAD_PATH.join(" -I ") + File.read("#{specdir}/spec.opts").chomp
 end
 
 task :default => :test

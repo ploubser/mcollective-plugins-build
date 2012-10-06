@@ -1,5 +1,9 @@
+# Proof on concept build class for mcollective plugins
 class PluginBuilder
-  #TODO : Write deploy code
+  # TODO : Write deploy code
+  # TODO : Remove references to local files and directories
+  # TODO : Move to a lib directory and write a real executable
+  # TODO : Consider turning this into a gem
   require 'yaml'
   require 'pp'
 

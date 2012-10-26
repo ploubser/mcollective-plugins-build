@@ -4,8 +4,11 @@ class PluginBuilder
   # TODO : Remove references to local files and directories
   # TODO : Move to a lib directory and write a real executable
   # TODO : Consider turning this into a gem
+  # TODO : DDL types are being hardcoded when loaded. Fix.
   require 'yaml'
   require 'pp'
+  require 'rubygems'
+  require 'mcollective'
 
   @@plugin_types = ["agent"]
 
@@ -25,45 +28,38 @@ class PluginBuilder
 
   # Determine which plugins should be built
   def to_build?
-    build_config = File.join("tmp", "buildconfig.yaml")
     build_list = []
 
-    if File.exists?(build_config)
-      config = YAML.load_file(build_config)
-      version = "0"
+    @plugins.each do |p|
+      begin
+        p.match(/^.*\/(.+)$/)
+        pname = $1
+        ddl = MCollective::DDL.new(pname, :agent, false)
+        ddl.instance_eval(File.read(File.join(p, pname, ".ddl")))
+        version = ddl.meta[:version]
 
-      @plugins.each do |p|
-        begin
-          version = YAML.load_file(File.join(p, "buildops.yaml"))["version"] || "0"
-        rescue Exception => e
-          puts "buildops file not found for plugin #{p}. Using version number 0"
-        end
-
-        unless config.keys.include?(p)
-          build_list << p
-          config[p] = version
-          next
-        end
-
-        if config[p] < version
-          build_list << p
-          config[p] = version.to_s
-        end
-
-      end
-      write_yaml(build_config, config)
-
-      return build_list
-    else
-      plugins = {}
-
-      @plugins.each do |p|
-        plugins[p] = YAML.load_file(File.join(p, "buildops.yaml"))["version"] || "0"
+      rescue Exception => e
+        puts "could not find ddl file '#{pname}.ddl'"
       end
 
-      write_yaml(build_config, plugins)
-      return plugins.keys
+      config_file = File.join("/", "tmp", pname, "build.yaml")
+
+      if File.exists?(config_file)
+        config = YAML.load_file(config_file)
+        if config[:version] < version
+          config[:version] = version
+          build_list << p
+          write_yaml(config_file, config)
+        end
+      else
+        config = {:version => version}
+        build_list << p
+        Dir.mkdir(File.join("/", "tmp", pname)) unless File.directory?(File.join("/", "tmp", pname))
+        write_yaml(config_file, config)
+      end
     end
+
+    return build_list
   end
 
   # Determine list of plugin
@@ -111,7 +107,7 @@ class PluginBuilder
 
   # Builds the plugin
   def build_plugin(plugin)
-    build_result = system("rake buildplugin TARGETDIR=#{plugin} DESTDIR=\"/home/vagrant/\" MCBASEDIR=\"/home/vagrant/marionette-collective\" ")
+    build_result = system("rake buildplugin TARGETDIR=#{plugin} DESTDIR=\"/tmp/plugins\" MCBASEDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" ")
     (build_result) ? @successful_builds << plugin : @failed_builds << plugin
   end
 
@@ -135,5 +131,5 @@ class PluginBuilder
   end
 end
 
-a = PluginBuilder.new("/home/vagrant/mcollective-plugins-build", "/home/vagrant")
+a = PluginBuilder.new(File.dirname(__FILE__), "/home/vagrant")
 a.build

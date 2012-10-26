@@ -36,14 +36,11 @@ class PluginBuilder
         p.match(/^.*\/(.+)$/)
         pname = $1
         ddl = MCollective::DDL.new(pname, :agent, false)
-        ddl.instance_eval(File.read(File.join(p, pname, ".ddl")))
-        puts File.join(File.expand_path(p), pname, ".ddl")
-        puts File.exists?(File.join(p, pname, ".ddl"))
+        ddl.instance_eval(File.read(File.join(File.expand_path(p), pname, ".ddl")))
         version = ddl.meta[:version]
 
       rescue Exception => e
-        puts e.to_s
-        puts "could not find ddl file '#{pname}.ddl'"
+        puts "could not find ddl file '#{pname}.ddl' - #{e}"
       end
 
       config_file = File.join("/", "tmp", pname, "build.yaml")

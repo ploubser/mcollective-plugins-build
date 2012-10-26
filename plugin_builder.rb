@@ -36,7 +36,7 @@ class PluginBuilder
         p.match(/^.*\/(.+)$/)
         pname = $1
         ddl = MCollective::DDL.new(pname, :agent, false)
-        ddl.instance_eval(File.read(File.join(File.expand_path(p), "#{pname}.ddl")))
+        ddl.instance_eval(File.read(File.join(File.expand_path(p), "agent", "#{pname}.ddl")))
         version = ddl.meta[:version]
 
       rescue Exception => e

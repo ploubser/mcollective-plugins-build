@@ -17,6 +17,7 @@ end
 
 
 def build_package(path)
+  require 'yaml'
   options = []
 
   if File.directory?(path)

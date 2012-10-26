@@ -37,9 +37,12 @@ class PluginBuilder
         pname = $1
         ddl = MCollective::DDL.new(pname, :agent, false)
         ddl.instance_eval(File.read(File.join(p, pname, ".ddl")))
+        puts File.join(p, pname, ".ddl")
+        puts File.exists?(File.join(p, pname, ".ddl"))
         version = ddl.meta[:version]
 
       rescue Exception => e
+        puts e.to_s
         puts "could not find ddl file '#{pname}.ddl'"
       end
 

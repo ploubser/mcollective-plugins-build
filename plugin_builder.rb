@@ -29,6 +29,7 @@ class PluginBuilder
   # Determine which plugins should be built
   def to_build?
     build_list = []
+    version = "0"
 
     @plugins.each do |p|
       begin

@@ -1,6 +1,5 @@
 specdir = File.join([File.dirname(__FILE__), "spec"])
 
-require "#{specdir}/spec_helper.rb"
 require 'rake'
 require 'rspec/core/rake_task'
 
@@ -9,9 +8,10 @@ def safe_system *args
 end
 
 def check_build_env
-  raise "Not all environment variables have been set. Missing #{{"'DESTDIR'" => ENV["DESTDIR"], "'MCBASEDIR'" => ENV["MCBASEDIR"], "'TARGETDIR'" => ENV["TARGETDIR"]}.reject{|k,v| v != nil}.keys.join(", ")}" unless ENV["DESTDIR"] && ENV["MCBASEDIR"] && ENV["TARGETDIR"]
+  raise "Not all environment variables have been set. Missing #{{"'DESTDIR'" => ENV["DESTDIR"], "'MCLIBDIR'" => ENV["MCLIBDIR"], "'MCBINDIR'" => ENV["MCBINDIR"], "'TARGETDIR'" => ENV["TARGETDIR"]}.reject{|k,v| v != nil}.keys.join(", ")}" unless ENV["DESTDIR"] && ENV["MCLIBDIR"] && ENV["MCBINDIR"] && ENV["TARGETDIR"]
   raise "DESTDIR - '#{ENV["DESTDIR"]}' is not a directory" unless File.directory?(ENV["DESTDIR"])
-  raise "MCBASEDIR - '#{ENV["MCBASEDIR"]}' is not a directory" unless File.directory?(ENV["MCBASEDIR"])
+  raise "MCLIBDIR - '#{ENV["MCLIBDIR"]}' is not a directory" unless File.directory?(ENV["MCLIBDIR"])
+  raise "MCBINDIR - '#{ENV["MCBINDIR"]}' is not a directory" unless File.directory?(ENV["MCBINDIR"])
   raise "TARGETDIR - '#{ENV["TARGETDIR"]}' is not a directory" unless File.directory?(ENV["TARGETDIR"])
 end
 
@@ -36,7 +36,7 @@ def build_package(path)
 
     options << "--dependency=\"#{buildops["dependencies"].join(" ")}\"" if buildops["dependencies"]
 
-    safe_system("ruby -I #{File.join(ENV["MCBASEDIR"], "lib")} #{File.join(ENV["MCBASEDIR"], "bin", "mco")} plugin package #{path} #{options.join(" ")}")
+    safe_system("ruby -I #{File.join(ENV["MCLIBDIR"], "lib")} #{File.join(ENV["MCBINDIR"], "bin", "mco")} plugin package -v #{path} #{options.join(" ")}")
     safe_system("mv *.rpm #{ENV["DESTDIR"]}") unless File.expand_path(ENV["DESTDIR"]) == Dir.pwd
   end
 end
@@ -61,6 +61,7 @@ end
 
 desc "Run agent and application tests"
 RSpec::Core::RakeTask.new(:test) do |t|
+  require "#{specdir}/spec_helper.rb"
   if ENV["TARGETDIR"]
     t.pattern = "#{File.expand_path(ENV["TARGETDIR"])}/spec/*_spec.rb"
   else

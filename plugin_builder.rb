@@ -108,7 +108,7 @@ class PluginBuilder
 
   # Builds the plugin
   def build_plugin(plugin)
-    build_result = system("rake buildplugin TARGETDIR=#{plugin} DESTDIR=\"/tmp/plugins\" MCBASEDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" ")
+    build_result = system("rake buildplugin TARGETDIR=#{plugin} DESTDIR=\"/tmp/plugins\" MCBINDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" MCLIBDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" ")
     (build_result) ? @successful_builds << plugin : @failed_builds << plugin
   end
 

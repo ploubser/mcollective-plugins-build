@@ -25,7 +25,7 @@ class PluginBuilder
 
   # Determine which plugins should be built
   def to_build?
-    build_config = File.join(@user_dir, "buildconfig.yaml")
+    build_config = File.join("tmp", "buildconfig.yaml")
     build_list = []
 
     if File.exists?(build_config)

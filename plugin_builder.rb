@@ -45,9 +45,9 @@ class PluginBuilder
           next
         end
 
-        if config[p] <= version
+        if config[p] < version
           build_list << p
-          config[p] = version
+          config[p] = version.to_s
         end
 
       end
@@ -111,7 +111,7 @@ class PluginBuilder
 
   # Builds the plugin
   def build_plugin(plugin)
-    build_result = system("rake buildplugin TARGETDIR=#{plugin} DESTDIR=\"/home/psy/testbuilds\" MCBASEDIR=\"/home/psy/marionette-collective\" ")
+    build_result = system("rake buildplugin TARGETDIR=#{plugin} DESTDIR=\"/home/vagrant/\" MCBASEDIR=\"/home/vagrant/marionette-collective\" ")
     (build_result) ? @successful_builds << plugin : @failed_builds << plugin
   end
 
@@ -127,7 +127,7 @@ class PluginBuilder
     puts "Failed tests - #{@failed_tests.size}"
     puts "Successful builds - #{@successful_builds.size}"
     puts "Failed builds - #{@failed_builds.size}"
-    if @failed_tests.size + @failed_builds > 0
+    if @failed_tests.size + @failed_builds.size > 0
       exit 1
     else
       exit 0
@@ -135,5 +135,5 @@ class PluginBuilder
   end
 end
 
-a = PluginBuilder.new("/home/psy/mcollective-plugins-build", "/home/psy")
+a = PluginBuilder.new("/home/vagrant/mcollective-plugins-build", "/home/vagrant")
 a.build

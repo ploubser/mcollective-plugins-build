@@ -112,7 +112,7 @@ class PluginBuilder
 
   # Builds the plugin
   def build_plugin(plugin)
-    build_result = system("rake buildplugin TARGETDIR=#{File.expand_path(plugin[0])} DESTDIR=\"/tmp/plugins\" MCBINDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" MCLIBDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" ")
+    build_result = system("rake buildplugin TARGETDIR=#{File.expand_path(plugin[0])} DESTDIR=\"/tmp/#{name(plugin[0])}\" MCBINDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" MCLIBDIR=\"#{File.join("/", "tmp", "marionette-collective")}\" ")
     if build_result
       @successful_builds << plugin[0]
       config_file = File.join("/", "tmp", name(plugin[0]), "build.yaml")

@@ -1,7 +1,10 @@
 specdir = File.join([File.dirname(__FILE__), "spec"])
 
 require 'rake'
-require 'rspec/core/rake_task'
+begin
+  require 'rspec/core/rake_task'
+rescue LoadError
+end
 
 def safe_system *args
   raise RuntimeError, "Failed: #{args.join(' ')}" unless system *args
@@ -59,16 +62,18 @@ task :build do
   end
 end
 
-desc "Run agent and application tests"
-RSpec::Core::RakeTask.new(:test) do |t|
-  require "#{specdir}/spec_helper.rb"
-  if ENV["TARGETDIR"]
-    t.pattern = "#{File.expand_path(ENV["TARGETDIR"])}/spec/*_spec.rb"
-  else
-    t.pattern = 'agent/**/spec/*_spec.rb'
-  end
+if defined?(RSpec::Core::RakeTask)
+  desc "Run agent and application tests"
+  RSpec::Core::RakeTask.new(:test) do |t|
+    require "#{specdir}/spec_helper.rb"
+    if ENV["TARGETDIR"]
+      t.pattern = "#{File.expand_path(ENV["TARGETDIR"])}/spec/*_spec.rb"
+    else
+      t.pattern = 'agent/**/spec/*_spec.rb'
+    end
 
-  t.rspec_opts = $LOAD_PATH.join(" -I ") + " " + File.read("#{specdir}/spec.opts").chomp
+    t.rspec_opts = $LOAD_PATH.join(" -I ") + " " + File.read("#{specdir}/spec.opts").chomp
+  end
 end
 
 task :default => :test

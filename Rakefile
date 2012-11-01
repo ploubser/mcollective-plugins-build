@@ -38,7 +38,7 @@ def build_package(path)
 
     options << "--dependency=\"#{buildops["dependencies"].join(" ")}\"" if buildops["dependencies"]
 
-    safe_system("ruby -I #{File.join(ENV["MCLIBDIR"], "lib")} #{File.join(ENV["MCBINDIR"], "bin", "mco")} plugin package -v #{path} #{options.join(" ")}")
+    safe_system("ruby -I #{File.join(ENV["MCLIBDIR"], "lib")} #{File.join(ENV["MCBINDIR"], "mco")} plugin package -v #{path} #{options.join(" ")}")
     move_artifacts
   end
 end

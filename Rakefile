@@ -28,9 +28,9 @@ def build_package(path)
 
     return unless buildops["build"]
 
-    libdir = buildops["mclibdir"] || ENV["LIBDIR"]
-    mcname = buildops["mcname"] || ENV["MCNAME"]
-    sign = buildops["sign"] || ENV["SIGN"]
+    libdir   = ENV["LIBDIR"] || buildops["mclibdir"]
+    mcname   = ENV["MCNAME"] || buildops["mcname"]
+    sign     = ENV["SIGN"]   || buildops["sign"]
 
     options << "--pluginpath=#{libdir}" if libdir
     options << "--mcname=#{mcname}" if mcname

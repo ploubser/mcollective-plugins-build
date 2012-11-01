@@ -18,7 +18,6 @@ def check_build_env
   raise "TARGETDIR - '#{ENV["TARGETDIR"]}' is not a directory" unless File.directory?(ENV["TARGETDIR"])
 end
 
-
 def build_package(path)
   require 'yaml'
   options = []
@@ -40,7 +39,17 @@ def build_package(path)
     options << "--dependency=\"#{buildops["dependencies"].join(" ")}\"" if buildops["dependencies"]
 
     safe_system("ruby -I #{File.join(ENV["MCLIBDIR"], "lib")} #{File.join(ENV["MCBINDIR"], "bin", "mco")} plugin package -v #{path} #{options.join(" ")}")
-    safe_system("mv *.rpm #{ENV["DESTDIR"]}") unless File.expand_path(ENV["DESTDIR"]) == Dir.pwd
+    move_artifacts
+  end
+end
+
+def move_artifacts
+  rpms = FileList["*.rpm"]
+  debs = FileList["*.deb","*.orig.tar.gz","*.debian.tar.gz","*.diff.gz","*.dsc","*.changes"]
+  [debs,rpms].each do |pkgs|
+    unless pkgs.empty?
+      safe_system("mv #{pkgs} #{ENV["DESTDIR"]}") unless File.expand_path(ENV["DESTDIR"]) == Dir.pwd
+    end
   end
 end
 
